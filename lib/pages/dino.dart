@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class DinoGame extends StatefulWidget {
+  const DinoGame({Key? key}) : super(key: key);
+
   @override
   _DinoGameState createState() => _DinoGameState();
 }
@@ -52,7 +54,7 @@ class _DinoGameState extends State<DinoGame> {
               Expanded(
                 child: Column(
                   children: [
-                    Text('Dino Here'),
+                    const Text('Dino Here'),
                     SizedBox(
                       height: 300,
                       width: double.infinity,
@@ -94,7 +96,8 @@ class _DinoGameState extends State<DinoGame> {
                       ),
                     ),
                     Expanded(
-                      child: GestureDetector(onTap: jump, child: Text('Jump')),
+                      child: GestureDetector(
+                          onTap: jump, child: const Text('Jump')),
                     )
                   ],
                 ),

@@ -3,7 +3,6 @@ import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
-import 'package:flame/sprite.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flame_practice/components/pauseMenu.dart';
@@ -11,9 +10,11 @@ import 'package:flame_practice/components/pauseMenu.dart';
 class Dino extends SpriteComponent {
   Dino() : super(size: Vector2.all(32));
 
+  @override
   Future<void> onLoad() async {
     sprite = await Sprite.load('dinoSprite.png');
     anchor = Anchor.center;
+    await super.onLoad();
   }
 
   @override
@@ -21,6 +22,23 @@ class Dino extends SpriteComponent {
     super.onGameResize(gameSize);
     position = gameSize / 2;
   }
+}
+
+class PauseButton extends HudButtonComponent {
+  PauseButton({
+    required EdgeInsets margin,
+    required Sprite sprite,
+    required VoidCallback onPressed,
+    Sprite? spritePressed,
+  }) : super(
+          button: SpriteComponent(
+            position: Vector2.zero(),
+            sprite: sprite,
+            size: Vector2(50, 25),
+          ),
+          margin: margin,
+          onPressed: onPressed,
+        );
 }
 
 class CubeJump extends FlameGame
@@ -59,9 +77,15 @@ class CubeJump extends FlameGame
 
   @override
   Future<void> onLoad() async {
-    await super.onLoad();
     add(Dino());
-    overlays.add('pause');
+    await add(
+      PauseButton(
+        onPressed: () => overlays.add('pause'),
+        sprite: await Sprite.load('pauseButton.png'),
+        margin: const EdgeInsets.all(6),
+      ),
+    );
+    await super.onLoad();
   }
 }
 
