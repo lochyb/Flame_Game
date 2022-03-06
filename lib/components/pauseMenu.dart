@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
+import '../main.dart';
 
 class PauseMenu extends StatelessWidget {
   ///
   const PauseMenu({Key? key, required this.game}) : super(key: key);
 
   /// The reference to the game.
-  final MoonlanderGame game;
+  final CubeJump game;
 
   @override
   Widget build(BuildContext context) {

@@ -1,47 +1,93 @@
 import 'dart:async';
+import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
-import 'package:flame_practice/components/SideScroll.dart';
+import 'package:flame/input.dart';
+import 'package:flame/sprite.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flame_practice/pauseMenu.dart';
+import 'package:flame_practice/components/pauseMenu.dart';
+
+class Dino extends SpriteComponent {
+  Dino() : super(size: Vector2.all(32));
+
+  Future<void> onLoad() async {
+    sprite = await Sprite.load('dinoSprite.png');
+    anchor = Anchor.center;
+  }
+
+  @override
+  void onGameResize(Vector2 gameSize) {
+    super.onGameResize(gameSize);
+    position = gameSize / 2;
+  }
+}
+
+class CubeJump extends FlameGame
+    with
+        HasCollidables,
+        HasTappables,
+        HasKeyboardHandlerComponents,
+        HasDraggables {
+  void onOverlayChanged() {
+    if (overlays.isActive('pause')) {
+      pauseEngine();
+    } else {
+      resumeEngine();
+    }
+  }
+
+  @override
+  bool get debugMode => kDebugMode;
+
+  /// Restart the current level.
+  void restart() {
+    // TODO: Implement restart of current level.
+  }
+
+  @override
+  void onMount() {
+    overlays.addListener(onOverlayChanged);
+    super.onMount();
+  }
+
+  @override
+  void onRemove() {
+    overlays.removeListener(onOverlayChanged);
+    super.onRemove();
+  }
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+    add(Dino());
+    overlays.add('pause');
+  }
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Flame.device.setLandscape();
 
-  final game = MoonlanderGame();
+  final game = CubeJump();
 
   runApp(
     MaterialApp(
       home: GameWidget(
         game: game,
-        //Work in progress loading screen on game start
         loadingBuilder: (context) => const Center(
           child: CircularProgressIndicator(),
         ),
-        //Work in progress error handling
         errorBuilder: (context, ex) {
-          //Print the error in th dev console
           debugPrint(ex.toString());
           return const Center(
             child: Text('Sorry, something went wrong. Reload me'),
           );
         },
         overlayBuilderMap: {
-          'pause': (context, MoonlanderGame game) => PauseMenu(game: game),
+          'pause': (context, CubeJump game) => PauseMenu(game: game),
         },
       ),
     ),
   );
-}
-
-/// This class encapulates the whole game.
-class MoonlanderGame extends FlameGame with HasCollidables {
-  @override
-  Future<void> onLoad() async {
-    unawaited(
-        add(SideScrollComponent(position: size / 2, size: Vector2.all(20))));
-
-    return super.onLoad();
-  }
 }
